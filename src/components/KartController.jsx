@@ -4,7 +4,7 @@ import { PerspectiveCamera } from "@react-three/drei";
 import { useGamepad } from "./useGamepad";
 import { BallCollider, RigidBody } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
-import { Vector3 } from "three";
+import { Vector3, MathUtils } from "three";
 
 
 export const KartController = () => {
@@ -16,7 +16,7 @@ export const KartController = () => {
 
   const [currentSpeed, setCurrentSpeed] = useState(0);
 
-  const maxSpeed = 30;
+  const maxSpeed = 20;
   const accelerationFactor = 5;
   const decceleration = 10;
 
@@ -30,6 +30,7 @@ export const KartController = () => {
   const driftRight = useRef(false);
   const RBisHeld = useRef(false);
   let steeringAngle = 0;
+  const animation = useRef();
 
   useFrame((state, delta) => {
     if (!kart.current || !body.current) return;
@@ -73,14 +74,17 @@ export const KartController = () => {
 
     if(!driftLeft.current && !driftRight.current) {
       steeringAngle = joystick[0] * currentSteeringSpeed;
+      animation.current.rotation.y = MathUtils.lerp(animation.current.rotation.y, -steeringAngle * 10,  0.05 * delta * 144);
     }
     if (driftLeft.current) {
       driftDirection.current = -1;
       steeringAngle = -(1.2 - joystick[0]) * currentSteeringSpeed; 
+      animation.current.rotation.y = MathUtils.lerp(animation.current.rotation.y, -steeringAngle * 10 + 0.1,  0.05 * delta * 144);
     }
     if (driftRight.current) {
       driftDirection.current = 1;
       steeringAngle = (joystick[0] + 1.2) * currentSteeringSpeed;
+      animation.current.rotation.y = MathUtils.lerp(animation.current.rotation.y, -(steeringAngle * 10 + 0.1),  0.05 * delta * 144);
     }
 
     console.log(steeringAngle)
@@ -125,7 +129,9 @@ export const KartController = () => {
       </RigidBody>
       <group>
           <group ref={kart}>
+            <group ref={animation}>
             <Kart />
+            </group>
             <PerspectiveCamera makeDefault position={[0, 2, 6]} />
           </group>
         </group>
