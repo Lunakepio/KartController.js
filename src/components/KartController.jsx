@@ -75,12 +75,12 @@ export const KartController = () => {
       steeringAngle = joystick[0] * currentSteeringSpeed;
     }
     if (driftLeft.current) {
-      driftDirection.current = -1; // Correct direction for left drift
-      steeringAngle = -(1 - joystick[0]) * currentSteeringSpeed; // Adjusted calculation
+      driftDirection.current = -1;
+      steeringAngle = -(1.2 - joystick[0]) * currentSteeringSpeed; 
     }
     if (driftRight.current) {
       driftDirection.current = 1;
-      steeringAngle = (joystick[0] + 1) * currentSteeringSpeed;
+      steeringAngle = (joystick[0] + 1.2) * currentSteeringSpeed;
     }
 
     console.log(steeringAngle)
